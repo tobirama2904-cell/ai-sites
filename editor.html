@@ -2,69 +2,9 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script src="https://cdn.tailwindcss.com"></script>
+<title>Editor</title>
 </head>
-
-<body class="bg-gray-900 text-white">
-<div id="app"></div>
-
-<script>
-const { useState } = React
-
-function App() {
-
-  const [blocks, setBlocks] = useState([
-    {id:1, text:"Hero Section"},
-    {id:2, text:"Features"},
-    {id:3, text:"Pricing"}
-  ])
-
-  const move = (from, to) => {
-    const updated = [...blocks]
-    const item = updated.splice(from,1)[0]
-    updated.splice(to,0,item)
-    setBlocks(updated)
-  }
-
-  const save = async () => {
-    const html = document.documentElement.outerHTML
-
-    await fetch("/save", {
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({html})
-    })
-
-    alert("Saved 🚀")
-  }
-
-  return (
-    React.createElement("div", {className:"p-6"},
-      blocks.map((b,i)=>
-        React.createElement("div", {
-          key:b.id,
-          draggable:true,
-          contentEditable:true,
-          className:"bg-gray-800 p-4 m-2 rounded cursor-move",
-          onDragStart:(e)=> e.dataTransfer.setData("i", i),
-          onDrop:(e)=>{
-            const from = e.dataTransfer.getData("i")
-            move(from, i)
-          },
-          onDragOver:(e)=>e.preventDefault()
-        }, b.text)
-      ),
-      React.createElement("button",
-        {onClick:save, className:"mt-4 p-3 bg-blue-500 rounded"},
-        "💾 Save"
-      )
-    )
-  )
-}
-
-ReactDOM.createRoot(document.getElementById("app")).render(React.createElement(App))
-</script>
+<body style="background:black;color:white;">
+<h1>EDITOR WORKS ✅</h1>
 </body>
 </html>
