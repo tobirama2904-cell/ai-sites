@@ -1,9 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Мой сайт</title>
+  <title>AI Sites</title>
 </head>
-<body>
-    <h1>Сайт работает 🚀</h1>
+<body style="background:#0f172a;color:white;font-family:sans-serif">
+  <h1>🚀 Мои сайты</h1>
+  <div id="list"></div>
+
+  <script>
+    fetch("sites.json")
+      .then(r => r.json())
+      .then(data => {
+        const list = document.getElementById("list")
+        data.forEach(site => {
+          list.innerHTML += `<p><a href="${site.url}">${site.name}</a></p>`
+        })
+      })
+  </script>
 </body>
 </html>
