@@ -1,108 +1,57 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<title>AI Builder PRO</title>
+<body style="background:black;color:white;font-family:sans-serif">
 
-<style>
-body{
- margin:0;
- background:#0f0f0f;
- color:white;
- font-family:sans-serif;
- display:flex;
- height:100vh;
-}
+<h2>AI SaaS</h2>
 
-#left{
- width:350px;
- background:#111;
- padding:15px;
- display:flex;
- flex-direction:column;
- gap:10px;
-}
+<input id="u" placeholder="user">
+<input id="p" placeholder="pass">
 
-#right{
- flex:1;
- background:white;
-}
+<button onclick="reg()">Register</button>
+<button onclick="log()">Login</button>
 
-input, textarea{
- padding:10px;
- border:none;
- border-radius:8px;
-}
+<hr>
 
-button{
- padding:10px;
- border:none;
- border-radius:8px;
- background:#4f46e5;
- color:white;
- cursor:pointer;
-}
+<textarea id="prompt"></textarea>
+<button onclick="create()">Create Site</button>
 
-#projects{
- overflow:auto;
- max-height:200px;
-}
+<div id="sites"></div>
 
-.project{
- padding:8px;
- background:#1f2937;
- margin-top:5px;
- cursor:pointer;
-}
-</style>
-</head>
-
-<body>
-
-<div id="left">
-
-<h2>🤖 AI Builder</h2>
-
-<textarea id="prompt" placeholder="Напиши: сайт для продажи кроссовок..."></textarea>
-
-<button onclick="generate()">🚀 Создать сайт</button>
-
-<h3>📂 Проекты</h3>
-<div id="projects"></div>
-
-</div>
-
-<iframe id="right"></iframe>
+<iframe id="view" style="width:100%;height:400px"></iframe>
 
 <script>
-let projects = []
+let token=""
 
-async function generate(){
- let p = prompt.value
-
- let r = await fetch("/create-site",{
-  method:"POST",
-  headers:{"Content-Type":"application/json"},
-  body:JSON.stringify({prompt:p})
- })
-
- let d = await r.json()
-
- projects.push(d.id)
- renderProjects()
-
- loadSite(d.id)
+async function reg(){
+ let r=await fetch("/register",{method:"POST",body:JSON.stringify({user:u.value,pass:p.value})})
+ let d=await r.json()
+ token=d.token
 }
 
-function loadSite(id){
- right.src = "/site?id=" + id
+async function log(){
+ let r=await fetch("/login",{method:"POST",body:JSON.stringify({user:u.value,pass:p.value})})
+ let d=await r.json()
+ token=d.token
+ load()
 }
 
-function renderProjects(){
- projects.innerHTML=""
- projects.forEach(id=>{
-  projects.innerHTML += `<div class="project" onclick="loadSite('${id}')">${id}</div>`
+async function create(){
+ await fetch("/create-site",{method:"POST",headers:{Authorization:token},body:JSON.stringify({prompt:prompt.value})})
+ load()
+}
+
+async function load(){
+ let r=await fetch("/sites",{headers:{Authorization:token}})
+ let d=await r.json()
+
+ sites.innerHTML=""
+ d.forEach(s=>{
+  sites.innerHTML+=`<div onclick="openSite(${s.id})">${s.prompt}</div>`
  })
+}
+
+function openSite(id){
+ view.src="/site/"+id
 }
 </script>
 
